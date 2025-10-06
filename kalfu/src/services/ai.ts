@@ -49,16 +49,26 @@ export const streamChatCompletion = async (
     if (!response.ok) {
       const errorText = await response.text();
       console.error('API Error:', response.status, errorText);
-      throw new Error(`API error: ${response.status}`);
+      
+      if (response.status === 502 || response.status === 503) {
+        throw new Error('Server is temporarily unavailable. Please try again in a moment.');
+      } else if (response.status === 429) {
+        throw new Error('Too many requests. Please wait a moment and try again.');
+      } else if (response.status === 401) {
+        throw new Error('API key is invalid. Please check your configuration.');
+      } else {
+        throw new Error(`API error: ${response.status}. Please try again.`);
+      }
     }
 
     console.log('Response received, starting stream...');
 
-    // For mobile: Use non-streaming as fallback
+    // For mobile: Simulate typing effect with chunks
     if (!supportsStreaming) {
       const text = await response.text();
       const lines = text.split('\n').filter(line => line.trim().startsWith('data: '));
       
+      let fullContent = '';
       for (const line of lines) {
         if (line.trim() === 'data: [DONE]') continue;
         
@@ -66,12 +76,20 @@ export const streamChatCompletion = async (
           const data = JSON.parse(line.slice(6));
           const content = data.choices?.[0]?.delta?.content;
           if (content) {
-            onChunk(content);
+            fullContent += content;
           }
         } catch (e) {
           console.error('Error parsing SSE data:', e);
         }
       }
+      
+      // Simulate typing effect by sending words incrementally
+      const words = fullContent.split(' ');
+      for (let i = 0; i < words.length; i++) {
+        onChunk(words[i] + (i < words.length - 1 ? ' ' : ''));
+        await new Promise(resolve => setTimeout(resolve, 30)); // 30ms delay between words
+      }
+      
       onComplete();
       return;
     }

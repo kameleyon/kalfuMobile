@@ -17,46 +17,44 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
 
   return (
     <View style={[styles.container, isUser && styles.userContainer]}>
-      <View
-        style={[
-          styles.messageCard,
-          isUser ? styles.userMessage : styles.assistantMessage,
-        ]}
-      >
+      <View style={styles.messageRow}>
         {!isUser && (
-          <View style={styles.headerRow}>
-            <View style={styles.iconContainer}>
-              <View style={styles.iconStack}>
-                <MaterialCommunityIcons name="hat-fedora" size={12} color={colors.whiteAlpha[90]} style={styles.hatIcon} />
-                <MaterialCommunityIcons name="glasses" size={10} color={colors.whiteAlpha[90]} style={styles.glassesIcon} />
-              </View>
+          <View style={styles.iconContainer}>
+            <View style={styles.iconStack}>
+              <MaterialCommunityIcons name="hat-fedora" size={16} color={colors.whiteAlpha[90]} style={styles.hatIcon} />
+              <MaterialCommunityIcons name="glasses" size={14} color={colors.whiteAlpha[90]} style={styles.glassesIcon} />
             </View>
           </View>
         )}
-        {isUser && (
-          <View style={styles.userHeaderRow}>
-            <View style={styles.userIconContainer}>
-              <Text style={styles.userIconText}>{userInitial}</Text>
-            </View>
-          </View>
-        )}
-        <Markdown
-          style={{
-            body: styles.messageText,
-            paragraph: styles.messageText,
-          }}
+        <View
+          style={[
+            styles.messageCard,
+            isUser ? styles.userMessage : styles.assistantMessage,
+          ]}
         >
-          {message.content}
-        </Markdown>
-        {message.cards && message.cards.length > 0 && (
-          <View style={styles.cardsContainer}>
-            {message.cards.map((card, index) => (
-              <View key={index} style={styles.cardChip}>
-                <Text style={styles.cardText}>
-                  {card.name} {card.reversed ? '(R)' : ''}
-                </Text>
-              </View>
-            ))}
+          <Markdown
+            style={{
+              body: styles.messageText,
+              paragraph: styles.messageText,
+            }}
+          >
+            {message.content}
+          </Markdown>
+          {message.cards && message.cards.length > 0 && (
+            <View style={styles.cardsContainer}>
+              {message.cards.map((card, index) => (
+                <View key={index} style={styles.cardChip}>
+                  <Text style={styles.cardText}>
+                    {card.name} {card.reversed ? '(R)' : ''}
+                  </Text>
+                </View>
+              ))}
+            </View>
+          )}
+        </View>
+        {isUser && (
+          <View style={styles.userIconContainer}>
+            <Text style={styles.userIconText}>{userInitial}</Text>
           </View>
         )}
       </View>
@@ -67,14 +65,18 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
 const styles = StyleSheet.create({
   container: {
     marginBottom: spacing.lg,
-    alignItems: 'flex-start',
-    paddingHorizontal: spacing.md,
+    paddingHorizontal: spacing.sm,
   },
   userContainer: {
     alignItems: 'flex-end',
   },
+  messageRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    maxWidth: '85%',
+  },
   messageCard: {
-    maxWidth: '65%',
+    flex: 1,
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.md,
     borderRadius: 16,
@@ -87,30 +89,21 @@ const styles = StyleSheet.create({
     backgroundColor: colors.whiteAlpha[10],
     borderTopLeftRadius: 4,
   },
-  headerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: spacing.xs,
-  },
-  userHeaderRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: spacing.xs,
-    justifyContent: 'flex-end',
-  },
   iconContainer: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
     backgroundColor: colors.whiteAlpha[20],
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',
+    marginRight: spacing.sm,
+    marginTop: spacing.xs,
   },
   iconStack: {
     position: 'relative',
-    width: 16,
-    height: 16,
+    width: 20,
+    height: 20,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -123,15 +116,17 @@ const styles = StyleSheet.create({
     bottom: -1,
   },
   userIconContainer: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
     backgroundColor: colors.whiteAlpha[20],
     alignItems: 'center',
     justifyContent: 'center',
+    marginLeft: spacing.sm,
+    marginTop: spacing.xs,
   },
   userIconText: {
-    fontSize: typography.fontSize.xs,
+    fontSize: typography.fontSize.sm,
     fontWeight: typography.fontWeight.medium,
     color: colors.white,
   },

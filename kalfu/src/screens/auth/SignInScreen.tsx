@@ -9,6 +9,7 @@ import {
   Platform,
   Alert,
   Image,
+  ScrollView,
 } from 'react-native';
 import { useAuth } from '../../context/AuthContext';
 import { GradientBackground } from '../../components/GradientBackground';
@@ -45,7 +46,11 @@ export const SignInScreen = ({ navigation }: any) => {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.keyboardView}
       >
-        <View style={styles.content}>
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
           <View style={styles.header}>
             <Image
               source={require('../../../assets/logo.png')}
@@ -113,7 +118,7 @@ export const SignInScreen = ({ navigation }: any) => {
               </Text>
             </TouchableOpacity>
           </View>
-        </View>
+        </ScrollView>
       </KeyboardAvoidingView>
     </View>
   );
@@ -127,10 +132,11 @@ const styles = StyleSheet.create({
   keyboardView: {
     flex: 1,
   },
-  content: {
-    flex: 1,
+  scrollContent: {
+    flexGrow: 1,
     paddingHorizontal: spacing.xl,
     paddingTop: spacing['3xl'],
+    paddingBottom: spacing.xl,
   },
   header: {
     alignItems: 'center',
@@ -160,7 +166,7 @@ const styles = StyleSheet.create({
   formCard: {
     backgroundColor: colors.whiteAlpha[5],
     borderRadius: 24,
-    padding: spacing.xl,
+    padding: spacing.lg,
     borderWidth: 1,
     borderColor: colors.whiteAlpha[10],
   },

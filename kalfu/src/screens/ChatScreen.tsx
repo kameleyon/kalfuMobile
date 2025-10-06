@@ -351,7 +351,7 @@ export const ChatScreen = () => {
   const [messages, setMessages] = useState<ChatMessageType[]>([
     {
       role: 'assistant',
-      content: "Hey! I'm Kalfu, your tarot reader. What's on your mind today?",
+      content: "Hey! I'm Kalfu, What's on your mind today?",
       timestamp: new Date().toISOString(),
     },
   ]);
@@ -607,7 +607,7 @@ export const ChatScreen = () => {
             style={styles.logo}
             resizeMode="contain"
           />
-          <Text style={styles.headerTitle}>Kalfu</Text>
+          <Text style={styles.headerTitle}></Text>
         </View>
         <TouchableOpacity style={styles.profileButton}>
           <Ionicons name="person-circle-outline" size={32} color={colors.whiteAlpha[85]} />
@@ -704,7 +704,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   messagesList: {
-    padding: spacing.lg,
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.sm,
   },
   streamingContainer: {
     paddingHorizontal: spacing.lg,

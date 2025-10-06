@@ -94,7 +94,7 @@ export const SignUpScreen = ({ navigation }: any) => {
                 style={styles.logo}
                 resizeMode="contain"
               />
-              <Text style={styles.appName}>KALFU</Text>
+              <Text style={styles.appName}></Text>
               <Text style={styles.subtitle}>Your AI Tarot Reader</Text>
             </View>
 
@@ -200,12 +200,14 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     flexGrow: 1,
+    backgroundColor: 'transparent',
   },
   content: {
     flex: 1,
     paddingHorizontal: spacing.xl,
     paddingTop: spacing['3xl'],
     paddingBottom: spacing.xl,
+    backgroundColor: 'transparent',
   },
   header: {
     alignItems: 'center',
@@ -235,7 +237,7 @@ const styles = StyleSheet.create({
   formCard: {
     backgroundColor: colors.whiteAlpha[5],
     borderRadius: 24,
-    padding: spacing.xl,
+    padding: spacing.lg,
     borderWidth: 1,
     borderColor: colors.whiteAlpha[10],
   },

@@ -159,7 +159,7 @@ export const HistoryScreen = () => {
           style={styles.logo}
           resizeMode="contain"
         />
-        <Text style={styles.headerTitle}>Kalfu</Text>
+        <Text style={styles.headerTitle}></Text>
       </View>
 
       <View style={styles.searchContainer}>
