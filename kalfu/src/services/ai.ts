@@ -1,4 +1,5 @@
 import Constants from 'expo-constants';
+import { Platform } from 'react-native';
 
 const OPENROUTER_API_KEY = Constants.expoConfig?.extra?.EXPO_PUBLIC_OPENROUTER_API_KEY || process.env.EXPO_PUBLIC_OPENROUTER_API_KEY || '';
 const OPENROUTER_MODEL = Constants.expoConfig?.extra?.EXPO_PUBLIC_OPENROUTER_MODEL || process.env.EXPO_PUBLIC_OPENROUTER_MODEL || 'anthropic/claude-sonnet-4.5';
@@ -8,13 +9,25 @@ interface Message {
   content: string;
 }
 
+// Check if streaming is supported (web only for now)
+const supportsStreaming = Platform.OS === 'web';
+
 export const streamChatCompletion = async (
   messages: Message[],
   onChunk: (chunk: string) => void,
   onComplete: () => void,
   onError: (error: Error) => void
 ): Promise<void> => {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 60000); // 60 second timeout
+
   try {
+    if (!OPENROUTER_API_KEY) {
+      throw new Error('API key not configured');
+    }
+
+    console.log('Starting streaming request...');
+    
     const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -28,12 +41,42 @@ export const streamChatCompletion = async (
         messages,
         stream: true,
       }),
+      signal: controller.signal,
     });
 
+    clearTimeout(timeoutId);
+
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      const errorText = await response.text();
+      console.error('API Error:', response.status, errorText);
+      throw new Error(`API error: ${response.status}`);
     }
 
+    console.log('Response received, starting stream...');
+
+    // For mobile: Use non-streaming as fallback
+    if (!supportsStreaming) {
+      const text = await response.text();
+      const lines = text.split('\n').filter(line => line.trim().startsWith('data: '));
+      
+      for (const line of lines) {
+        if (line.trim() === 'data: [DONE]') continue;
+        
+        try {
+          const data = JSON.parse(line.slice(6));
+          const content = data.choices?.[0]?.delta?.content;
+          if (content) {
+            onChunk(content);
+          }
+        } catch (e) {
+          console.error('Error parsing SSE data:', e);
+        }
+      }
+      onComplete();
+      return;
+    }
+
+    // For web: Use streaming
     const reader = response.body?.getReader();
     const decoder = new TextDecoder();
 
@@ -73,7 +116,13 @@ export const streamChatCompletion = async (
       }
     }
   } catch (error) {
-    onError(error as Error);
+    clearTimeout(timeoutId);
+    console.error('Stream error:', error);
+    if ((error as Error).name === 'AbortError') {
+      onError(new Error('Request timeout - please try again'));
+    } else {
+      onError(error as Error);
+    }
   }
 };
 

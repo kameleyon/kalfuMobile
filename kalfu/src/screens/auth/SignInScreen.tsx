@@ -52,14 +52,14 @@ export const SignInScreen = ({ navigation }: any) => {
               style={styles.logo}
               resizeMode="contain"
             />
-            <Text style={styles.appName}>KALFU</Text>
-            <Text style={styles.subtitle}>Your AI Tarot Reader</Text>
+          
+            <Text style={styles.subtitle}>At a crossroad, take a leap</Text>
           </View>
 
           <View style={styles.formContainer}>
             <View style={styles.formCard}>
-              <Text style={styles.formTitle}>Welcome Back</Text>
-              <Text style={styles.formSubtitle}>Sign in to continue your journey</Text>
+              <Text style={styles.formTitle}>Welcome</Text>
+              <Text style={styles.formSubtitle}>Sign in to continue </Text>
 
               <View style={styles.inputGroup}>
                 <Text style={styles.inputLabel}>EMAIL</Text>

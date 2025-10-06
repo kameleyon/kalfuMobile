@@ -484,7 +484,8 @@ export const ChatScreen = () => {
       (chunk) => {
         accumulatedMessage.current += chunk;
         const now = Date.now();
-        if (now - lastUpdateTime.current > 50) {
+        // Increased interval for better mobile performance
+        if (now - lastUpdateTime.current > 150) {
           setStreamingMessage(accumulatedMessage.current);
           lastUpdateTime.current = now;
         }
@@ -510,7 +511,9 @@ export const ChatScreen = () => {
         }, 100);
       },
       (error) => {
-        Alert.alert('Error', 'Failed to get response. Please try again.');
+        console.error('Chat error:', error);
+        const errorMessage = error.message || 'Failed to get response. Please try again.';
+        Alert.alert('Connection Error', errorMessage);
         setIsLoading(false);
         setStreamingMessage('');
         accumulatedMessage.current = '';
@@ -540,7 +543,8 @@ export const ChatScreen = () => {
     const readingKeywords = [
       'reading', 'cards', 'draw', 'pull', 'spread', 'tarot',
       'tell me about', 'what do you see', 'should i', 'will i',
-      'career', 'love', 'relationship', 'future', 'advice'
+      'career', 'love', 'relationship', 'future', 'advice',
+      'i pulled', 'i drew', 'got the', 'my cards'
     ];
     
     if (readingKeywords.some(keyword => lowerMessage.includes(keyword))) {
@@ -565,9 +569,15 @@ export const ChatScreen = () => {
 
   const getCardCount = (message: string): number => {
     const lowerMessage = message.toLowerCase();
-    if (lowerMessage.includes('three') || lowerMessage.includes('3')) return 3;
-    if (lowerMessage.includes('celtic') || lowerMessage.includes('10')) return 10;
-    return 1;
+    
+    // Check for specific card counts requested
+    if (lowerMessage.includes('one card') || lowerMessage.includes('1 card') || lowerMessage.includes('single card')) return 1;
+    if (lowerMessage.includes('two') || lowerMessage.includes('2 cards')) return 2;
+    if (lowerMessage.includes('five') || lowerMessage.includes('5 cards')) return 5;
+    if (lowerMessage.includes('celtic') || lowerMessage.includes('10') || lowerMessage.includes('ten')) return 10;
+    
+    // Default to 3 cards for standard readings
+    return 3;
   };
 
   const renderMessage = ({ item }: { item: ChatMessageType }) => {
@@ -618,7 +628,13 @@ export const ChatScreen = () => {
           showsVerticalScrollIndicator={true}
           indicatorStyle="white"
           scrollIndicatorInsets={{ right: 1 }}
-          onContentSizeChange={() => flatListRef.current?.scrollToEnd()}
+          onContentSizeChange={() => {
+            setTimeout(() => flatListRef.current?.scrollToEnd({ animated: true }), 100);
+          }}
+          removeClippedSubviews={false}
+          maxToRenderPerBatch={10}
+          updateCellsBatchingPeriod={50}
+          windowSize={10}
         />
 
 
